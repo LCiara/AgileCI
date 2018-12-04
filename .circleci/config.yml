@@ -11,8 +11,9 @@ jobs:
             - checkout
             - run:
                 command: |
-                    .circleci/commit_check.sh:
+                    .circleci/commit_check.sh
 
+steps:
 # latest commit
 LATEST_COMMIT=$(git rev-parse HEAD)
 

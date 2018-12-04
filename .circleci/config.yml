@@ -13,7 +13,7 @@ jobs:
                 command: |
                     .circleci/commit_check.sh
 
-steps:
+jobs:
 # latest commit
 LATEST_COMMIT=$(git rev-parse HEAD)
 

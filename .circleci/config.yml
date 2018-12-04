@@ -1,37 +1,37 @@
+##################
+### config.yml ###
+##################
+
 version: 2
 jobs:
-  build:
-    working_directory: ~/circleci-demo-python-django
-    docker:
-      - image: circleci/python:3.6.4
-        environment:
-          PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
-      - image: circleci/postgres:9.6.2
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: circle_test
-    steps:
-      - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
-      - restore_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          command: |
-            sudo pip install pipenv
-            pipenv install
-      - save_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ".venv"
-            - "/usr/local/bin"
-            - "/usr/local/lib/python3.6/site-packages"
-      - run:
-          command: |
-            pipenv run "python HelloPython.py test"
-      - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: test-results
-          destination: tr1
+    build:
+        docker:
+            - image: circleci/python:3.6
+        steps:
+            - checkout
+            - run:
+                command: |
+                    .circleci/commit_check.sh
+set -e
+
+# latest commit
+LATEST_COMMIT=$(git rev-parse HEAD)
+
+# latest commit where path/to/folder1 was changed
+FOLDER1_COMMIT=$(git log -1 --format=format:%H --full-diff path/to/folder1)
+
+# latest commit where path/to/folder2 was changed
+FOLDER2_COMMIT=$(git log -1 --format=format:%H --full-diff path/to/folder2)
+
+if [ $FOLDER1_COMMIT = $LATEST_COMMIT ];
+    then
+        echo "files in folder1 has changed"
+        .circleci/do_something.sh
+elif [ $FOLDER2_COMMIT = $LATEST_COMMIT ];
+    then
+        echo "files in folder2 has changed"
+        .circleci/do_something_else.sh
+else
+     echo "no folders of relevance has changed"
+     exit 0;
+fi
